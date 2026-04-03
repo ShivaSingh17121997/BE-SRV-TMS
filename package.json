@@ -1,0 +1,35 @@
+{
+  "name": "be-teachers-record",
+  "version": "1.0.0",
+  "description": "Teacher Management System - Backend API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed:admin": "node src/seeds/superAdmin.seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "bcryptjs": "^2.4.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.577.0",
+    "mongoose": "^8.3.1",
+    "morgan": "^1.10.0",
+    "react-big-calendar": "^1.19.4",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
