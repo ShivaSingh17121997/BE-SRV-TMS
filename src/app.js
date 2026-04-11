@@ -42,6 +42,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/homework', homeworkRoutes);
+app.use('/api/feedbacks', require('./routes/feedback.routes'));
 
 // ─── 404 Handler ────────────────────────────────────────────────────────────
 app.use((req, res) => {
