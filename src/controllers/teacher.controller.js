@@ -67,20 +67,32 @@ const updateTeacher = asyncHandler(async (req, res) => {
         return sendError(res, 'You can only update your own profile.', 403);
     }
 
+    // Extract password to handle separately as it needs hashing via User model pre-save hook
+    const { password, ...updateData } = req.body;
+
     // Fields that cannot be updated by a teacher
     if (req.user.role === 'teacher') {
-        const forbidden = ['password', 'role', 'email'];
-        forbidden.forEach((field) => delete req.body[field]);
+        const forbidden = ['role', 'email'];
+        forbidden.forEach((field) => delete updateData[field]);
     }
 
     const teacher = await User.findOneAndUpdate(
         { _id: id, role: 'teacher' },
-        { $set: req.body },
+        { $set: updateData },
         { new: true, runValidators: true }
     ).select('-password');
 
     if (!teacher) {
         return sendError(res, 'Teacher not found.', 404);
+    }
+
+    // Handle password update if password is provided by admin/super_admin
+    if (password && req.user.role !== 'teacher') {
+        const user = await User.findById(id);
+        if (user) {
+            user.password = password;
+            await user.save();
+        }
     }
 
     return sendSuccess(res, { teacher }, 'Teacher updated successfully');
