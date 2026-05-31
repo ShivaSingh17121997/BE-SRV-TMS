@@ -12,6 +12,7 @@ const reportRoutes = require('./routes/report.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const adminRoutes = require('./routes/admin.routes');
 const homeworkRoutes = require('./routes/homework.routes');
+const onboardingRoutes = require('./routes/teacherOnboarding.routes');
 const errorHandler = require('./middleware/errorHandler.middleware');
 const { sendError } = require('./utils/response.util');
 
@@ -80,6 +81,7 @@ app.use('/api/payments', apiLimiter, paymentRoutes);
 app.use('/api/admin', apiLimiter, adminRoutes);
 app.use('/api/homework', apiLimiter, homeworkRoutes);
 app.use('/api/feedbacks', apiLimiter, require('./routes/feedback.routes'));
+app.use('/api/onboarding', apiLimiter, onboardingRoutes);
 
 // ─── 404 Handler ────────────────────────────────────────────────────────────
 app.use((req, res) => {

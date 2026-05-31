@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const Student = require('../models/student.model');
 const Class = require('../models/class.model');
+const Payment = require('../models/payment.model');
 const { sendSuccess, sendError } = require('../utils/response.util');
 const { getPagination, buildPaginationMeta } = require('../utils/pagination.util');
 const asyncHandler = require('../utils/asyncHandler.util');
@@ -52,12 +53,52 @@ const getAllTeachers = asyncHandler(async (req, res) => {
             .select('-password')
             .skip(skip)
             .limit(limit)
-            .sort({ [safeSortBy]: sortOrder }),
+            .sort({ [safeSortBy]: sortOrder })
+            .lean(),
         User.countDocuments(filter),
     ]);
 
+    const teacherIds = teachers.map(t => t._id);
+
+    const [earningsAggr, studentsAggr, classesAggr] = await Promise.all([
+        Payment.aggregate([
+            { $match: { teacherId: { $in: teacherIds }, status: 'paid' } },
+            { $group: { _id: '$teacherId', totalEarned: { $sum: '$amount' } } }
+        ]),
+        Student.aggregate([
+            { $match: { teacherId: { $in: teacherIds } } },
+            { $group: { _id: '$teacherId', count: { $sum: 1 } } }
+        ]),
+        Class.aggregate([
+            { $match: { teacherId: { $in: teacherIds } } },
+            { $group: { _id: '$teacherId', count: { $sum: 1 } } }
+        ])
+    ]);
+
+    const earningsMap = earningsAggr.reduce((acc, curr) => {
+        acc[curr._id.toString()] = curr.totalEarned;
+        return acc;
+    }, {});
+
+    const studentsMap = studentsAggr.reduce((acc, curr) => {
+        acc[curr._id.toString()] = curr.count;
+        return acc;
+    }, {});
+
+    const classesMap = classesAggr.reduce((acc, curr) => {
+        acc[curr._id.toString()] = curr.count;
+        return acc;
+    }, {});
+
+    const enrichedTeachers = teachers.map(t => ({
+        ...t,
+        totalEarned: earningsMap[t._id.toString()] || 0,
+        studentCount: studentsMap[t._id.toString()] || 0,
+        classCount: classesMap[t._id.toString()] || 0,
+    }));
+
     return sendSuccess(res, {
-        teachers,
+        teachers: enrichedTeachers,
         pagination: buildPaginationMeta(total, page, limit),
     });
 });
