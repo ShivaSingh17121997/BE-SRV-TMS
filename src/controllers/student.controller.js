@@ -97,9 +97,26 @@ const getAllStudents = asyncHandler(async (req, res) => {
     const { page, limit, skip } = getPagination(req.query);
     const filter = await getScopeFilter(req.user, req.query);
 
-    // Optional search by name
+    // Optional search by name, email, subject, or class
     if (req.query.search) {
-        filter.name = new RegExp(req.query.search, 'i');
+        const regex = new RegExp(req.query.search, 'i');
+        filter.$or = [
+            { name: regex },
+            { email: regex },
+            { subject: regex },
+            { class: regex },
+            { school: regex },
+        ];
+    }
+
+    // Filter by subject
+    if (req.query.subject) {
+        filter.subject = new RegExp(req.query.subject, 'i');
+    }
+
+    // Filter by status
+    if (req.query.status) {
+        filter.status = req.query.status;
     }
 
     const [students, total] = await Promise.all([

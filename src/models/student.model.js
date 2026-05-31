@@ -63,9 +63,12 @@ const studentSchema = new mongoose.Schema(
     }
 );
 
-// Index for faster teacher-scoped queries
+// Indexes for frequent queries
 studentSchema.index({ teacherId: 1 });
 studentSchema.index({ teacherId: 1, status: 1 });
+studentSchema.index({ userId: 1 });                                   // student login lookup
+studentSchema.index({ teacherId: 1, createdAt: -1 });                 // teacher student list
+studentSchema.index({ name: 'text', email: 'text', subject: 'text' }); // search
 
 const Student = mongoose.model('Student', studentSchema);
 module.exports = Student;

@@ -78,5 +78,10 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
 
+// Indexes for frequent teacher/admin queries
+userSchema.index({ role: 1, createdAt: -1 });       // getAllTeachers list
+userSchema.index({ role: 1, name: 1 });              // sort by name
+userSchema.index({ name: 'text', email: 'text', city: 'text' }); // text search
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;
