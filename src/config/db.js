@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { MONGO_URI } = require('./env');
-console.log(MONGO_URI)
 const connectDB = async () => {
   if (mongoose.connection.readyState >= 1) return;
 

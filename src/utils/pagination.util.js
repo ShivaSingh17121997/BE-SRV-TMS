@@ -25,6 +25,8 @@ const buildPaginationMeta = (total, page, limit) => ({
     totalPages: Math.ceil(total / limit),
     hasNextPage: page * limit < total,
     hasPrevPage: page > 1,
+    from: total === 0 ? 0 : (page - 1) * limit + 1,
+    to: Math.min(page * limit, total),
 });
 
 module.exports = { getPagination, buildPaginationMeta };

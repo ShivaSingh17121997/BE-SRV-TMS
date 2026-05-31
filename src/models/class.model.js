@@ -73,6 +73,9 @@ const classSchema = new mongoose.Schema(
 classSchema.index({ teacherId: 1 });
 classSchema.index({ teacherId: 1, date: -1 });
 classSchema.index({ teacherId: 1, studentId: 1 });
+classSchema.index({ studentId: 1, date: -1 });                       // student class history
+classSchema.index({ status: 1 });                                    // filter by status
+classSchema.index({ teacherId: 1, status: 1, amount: 1 });           // earnings aggregation
 
 const Class = mongoose.model('Class', classSchema);
 module.exports = Class;
